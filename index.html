@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Recovery Tracker — Personal Habit & Sobriety Tracker</title>
+  
+  <!-- SEO & Description -->
+  <meta name="description" content="A premium personal habit tracker for recovery, sobriety, and self-improvement. Track undesirable habits, visualize trends, and sync privately with GitHub Gist.">
+  <meta name="theme-color" content="#0f172a" id="meta-theme-color">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- App Shell Container -->
+  <div id="app">
+    
+    <!-- Top Header / Sync Indicator -->
+    <header id="app-header" style="display: none;">
+      <div id="sync-indicator">
+        <span class="sync-dot"></span>
+        <span class="sync-label"></span>
+        <span class="sync-time"></span>
+      </div>
+    </header>
+
+    <!-- SPA Views -->
+    <main>
+      
+      <!-- 1. Authentication View -->
+      <section id="view-auth" class="view view-active"></section>
+
+      <!-- 2. Home / Habits List View -->
+      <section id="view-home" class="view"></section>
+
+      <!-- 3. Habit Detail View -->
+      <section id="view-habit" class="view"></section>
+
+      <!-- 4. Statistics / Charts View -->
+      <section id="view-stats" class="view"></section>
+
+      <!-- 5. Settings View -->
+      <section id="view-settings" class="view"></section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (logged-in only) -->
+    <nav id="bottom-nav" style="display: none;">
+      <button class="nav-btn" data-nav="home" onclick="RT.App.navigate('home')">
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+      </button>
+      <button class="nav-btn" data-nav="stats" onclick="RT.App.navigate('stats')">
+        <span class="nav-icon">📊</span>
+        <span>Stats</span>
+      </button>
+      <button class="nav-btn" data-nav="settings" onclick="RT.App.navigate('settings')">
+        <span class="nav-icon">⚙️</span>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Toast Notifications Container -->
+  <div id="toast-container"></div>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Application Modules -->
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/habits.js"></script>
+  <script src="js/entries.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/heatmap.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

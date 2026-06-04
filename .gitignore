@@ -1,0 +1,7 @@
+# UI references and screenshots
+Habstick_UI_References/
+
+# Local developer/system files
+.DS_Store
+Thumbs.db
+*.log
