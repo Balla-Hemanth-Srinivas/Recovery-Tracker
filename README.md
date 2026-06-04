@@ -5,6 +5,7 @@ Recovery Tracker is a polished, production-quality, mobile-first Progressive Web
 All your data is stored locally in your browser and synchronized securely and privately across devices using your own **GitHub Gist**.
 
 ---
+Live Demo: [Recovery Tracker](https://balla-hemanth-srinivas.github.io/Recovery-Tracker/)
 
 ## ✨ Features
 
