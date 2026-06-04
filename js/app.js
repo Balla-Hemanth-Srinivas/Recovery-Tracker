@@ -157,7 +157,7 @@ RT.App = (() => {
           <div class="quick-stat-label">Today</div>
         </div>
         <div class="quick-stat">
-          <div class="quick-stat-value">${stats ? stats.successPct : 100}%</div>
+          <div class="quick-stat-value">${stats ? (stats.successPct === 'N/A' ? 'N/A' : stats.successPct + '%') : '--'}</div>
           <div class="quick-stat-label">Success</div>
         </div>
       </div>

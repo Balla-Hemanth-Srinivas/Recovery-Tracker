@@ -21,6 +21,10 @@ RT.Calendar = (() => {
   /* ─── Render Calendar ─── */
 
   function render(habitId, year, month, container) {
+    const habit = RT.Storage.getHabit(habitId);
+    if (!habit) return;
+
+    const createdDateStr = RT.Utils.formatDate(new Date(habit.createdAt));
     const todayStr  = RT.Utils.today();
     const numDays   = RT.Utils.daysInMonth(year, month);
     const firstDay  = RT.Utils.getDayOfWeek(`${year}-${String(month+1).padStart(2,'0')}-01`);
@@ -47,16 +51,34 @@ RT.Calendar = (() => {
     for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell cal-blank"></div>';
 
     for (let day = 1; day <= numDays; day++) {
-      const dateStr  = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      const future   = dateStr > todayStr;
-      const count    = counts[day] || 0;
-      const cls      = future ? 'cal-future' : colorClass(count);
+      const dateStr        = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const future         = dateStr > todayStr;
+      const beforeCreation = dateStr < createdDateStr;
+      const count          = counts[day] || 0;
+
+      let cls = '';
+      let isClickable = false;
+      let showCounter = false;
+
+      if (future) {
+        cls = 'cal-future cal-disabled';
+      } else if (beforeCreation) {
+        cls = 'cal-not-tracked cal-disabled';
+      } else {
+        isClickable = true;
+        if (count <= habit.threshold) {
+          cls = 'cal-green';
+        } else {
+          cls = colorClass(count);
+          showCounter = true;
+        }
+      }
 
       html += `
-        <div class="cal-cell ${cls}${future ? ' cal-disabled' : ''}"
-             data-date="${dateStr}" ${!future ? 'tabindex="0" role="button"' : ''}>
+        <div class="cal-cell ${cls}"
+             data-date="${dateStr}" ${isClickable ? 'tabindex="0" role="button"' : ''}>
           <span class="cal-num">${day}</span>
-          ${(!future && count > 0) ? `<span class="cal-count">${count}</span>` : ''}
+          ${showCounter ? `<span class="cal-count">${count}</span>` : ''}
         </div>`;
     }
 
@@ -75,7 +97,7 @@ RT.Calendar = (() => {
       render(habitId, y, m, container);
     });
 
-    // Day tap → show day detail modal
+    // Day tap → show day detail modal (clickable for all tracked days)
     container.querySelectorAll('.cal-cell:not(.cal-blank):not(.cal-disabled)').forEach(cell =>
       cell.addEventListener('click', () => showDayModal(habitId, cell.dataset.date))
     );

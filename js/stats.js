@@ -12,16 +12,19 @@ RT.Stats = (() => {
     const habit = RT.Storage.getHabit(habitId);
     if (!habit) return null;
 
-    const todayStr     = RT.Utils.today();
-    const effectiveEnd = endDate > todayStr ? todayStr : endDate;
-    const threshold    = habit.threshold;
-    const rangeEntries = RT.Storage.getEntriesForRange(habitId, startDate, effectiveEnd);
+    const todayStr       = RT.Utils.today();
+    const createdDateStr = RT.Utils.formatDate(new Date(habit.createdAt));
+    const effectiveStart = startDate > createdDateStr ? startDate : createdDateStr;
+    const effectiveEnd   = endDate > todayStr ? todayStr : endDate;
+    const threshold      = habit.threshold;
+    
+    const rangeEntries = RT.Storage.getEntriesForRange(habitId, effectiveStart, effectiveEnd);
 
     // Count per date in range
     const countByDate = {};
     rangeEntries.forEach(e => { countByDate[e.date] = (countByDate[e.date] || 0) + 1; });
 
-    const allDates        = RT.Utils.dateRange(startDate, effectiveEnd);
+    const allDates        = RT.Utils.dateRange(effectiveStart, effectiveEnd);
     const trackedDays     = allDates.length;
     const totalOccurrences = rangeEntries.length;
     let cleanDays = 0;
@@ -34,7 +37,7 @@ RT.Stats = (() => {
     const { currentStreak, longestStreak } = streaks(allCountByDate, threshold, habit.createdAt);
 
     // Success rate
-    const successPct = trackedDays > 0 ? Math.round((cleanDays / trackedDays) * 100) : 100;
+    const successPct = trackedDays > 0 ? Math.round((cleanDays / trackedDays) * 100) : 'N/A';
 
     // Average per day
     const avgPerDay = trackedDays > 0 ? (totalOccurrences / trackedDays).toFixed(1) : '0.0';
@@ -46,7 +49,8 @@ RT.Stats = (() => {
     // This month
     const now        = new Date();
     const monthStart = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
-    const monthEntries = RT.Storage.getEntriesForRange(habitId, monthStart, todayStr);
+    const monthStartBounded = monthStart > createdDateStr ? monthStart : createdDateStr;
+    const monthEntries = RT.Storage.getEntriesForRange(habitId, monthStartBounded, todayStr);
 
     // Extras
     const { bestWeek, bestMonth, highestDay } = extras(allCountByDate);
@@ -65,19 +69,28 @@ RT.Stats = (() => {
     const todayStr  = RT.Utils.today();
     const startStr  = createdAt ? RT.Utils.formatDate(new Date(createdAt)) : todayStr;
 
-    // Current streak (walk backwards from today)
+    // Current streak (walk backwards from today if today is clean)
     let currentStreak = 0;
-    let d = new Date(todayStr + 'T00:00:00');
-    const startD = new Date(startStr + 'T00:00:00');
-    while (d >= startD) {
-      if ((countByDate[RT.Utils.formatDate(d)] || 0) <= threshold) currentStreak++;
-      else break;
-      d.setDate(d.getDate() - 1);
+    const todayCount = countByDate[todayStr] || 0;
+
+    if (todayCount <= threshold) {
+      let d = new Date(todayStr + 'T00:00:00');
+      const startD = new Date(startStr + 'T00:00:00');
+      while (d >= startD) {
+        if ((countByDate[RT.Utils.formatDate(d)] || 0) <= threshold) {
+          currentStreak++;
+        } else {
+          break;
+        }
+        d.setDate(d.getDate() - 1);
+      }
+    } else {
+      currentStreak = 0;
     }
 
-    // Longest streak (walk forward through all days)
+    // Longest streak (walk forward through all tracked days)
     let longestStreak = 0, temp = 0;
-    const walker = new Date(startD);
+    const walker = new Date(startStr + 'T00:00:00');
     const end    = new Date(todayStr + 'T00:00:00');
     while (walker <= end) {
       if ((countByDate[RT.Utils.formatDate(walker)] || 0) <= threshold) {
@@ -178,7 +191,7 @@ RT.Stats = (() => {
         <div class="stats-grid">
           <div class="stat-card card"><div class="stat-value">${s.currentStreak}</div><div class="stat-label">Current Streak</div></div>
           <div class="stat-card card"><div class="stat-value">${s.longestStreak}</div><div class="stat-label">Best Streak</div></div>
-          <div class="stat-card card"><div class="stat-value">${s.successPct}%</div><div class="stat-label">Success Rate</div></div>
+          <div class="stat-card card"><div class="stat-value">${s.successPct === 'N/A' ? 'N/A' : s.successPct + '%'}</div><div class="stat-label">Success Rate</div></div>
           <div class="stat-card card"><div class="stat-value">${s.cleanDays}</div><div class="stat-label">Clean Days</div></div>
           <div class="stat-card card"><div class="stat-value">${s.occurrencesThisMonth}</div><div class="stat-label">This Month</div></div>
           <div class="stat-card card"><div class="stat-value">${s.avgPerDay}</div><div class="stat-label">Avg / Day</div></div>

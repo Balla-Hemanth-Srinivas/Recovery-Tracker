@@ -39,14 +39,18 @@
   --danger-dark:  #991b1b;
 
   /* Calendar cells */
-  --cal-green:     #bbf7d0;
-  --cal-green-text:#15803d;
-  --cal-amber:     #fde68a;
-  --cal-amber-text:#92400e;
-  --cal-lred:      #fecaca;
-  --cal-lred-text: #991b1b;
-  --cal-dred:      #f87171;
-  --cal-dred-text: #fff;
+  --cal-green:            #a7f3d0;
+  --cal-green-text:       #065f46;
+  --cal-amber:            #fcd34d;
+  --cal-amber-text:       #92400e;
+  --cal-lred:             #f87171;
+  --cal-lred-text:        #7f1d1d;
+  --cal-dred:             #dc2626;
+  --cal-dred-text:        #ffffff;
+  --cal-not-tracked:      #e5e7eb;
+  --cal-not-tracked-text: #94a3b8;
+  --cal-future:           rgba(229, 231, 235, 0.4);
+  --cal-future-text:      #94a3b8;
 
   /* Borders & Shadows */
   --border-color: #e2e8f0;
@@ -90,14 +94,18 @@
   --success-bg:    rgba(22,163,74,0.15);
   --warning-bg:    rgba(217,119,6,0.15);
   --danger-bg:     rgba(220,38,38,0.12);
-  --cal-green:     #166534;
-  --cal-green-text:#bbf7d0;
-  --cal-amber:     #92400e;
-  --cal-amber-text:#fde68a;
-  --cal-lred:      #7f1d1d;
-  --cal-lred-text: #fecaca;
-  --cal-dred:      #991b1b;
-  --cal-dred-text: #fecaca;
+  --cal-green:            #065f46;
+  --cal-green-text:       #a7f3d0;
+  --cal-amber:            #78350f;
+  --cal-amber-text:       #fcd34d;
+  --cal-lred:             #991b1b;
+  --cal-lred-text:        #fca5a5;
+  --cal-dred:             #7f1d1d;
+  --cal-dred-text:        #fee2e2;
+  --cal-not-tracked:      #1e293b;
+  --cal-not-tracked-text: #475569;
+  --cal-future:           rgba(30, 41, 59, 0.4);
+  --cal-future-text:      #475569;
   --border-color:  #334155;
   --shadow-sm:  0 1px 3px rgba(0,0,0,0.30);
   --shadow-md:  0 4px 12px rgba(0,0,0,0.30);
@@ -120,14 +128,18 @@
     --success-bg:    rgba(22,163,74,0.15);
     --warning-bg:    rgba(217,119,6,0.15);
     --danger-bg:     rgba(220,38,38,0.12);
-    --cal-green:     #166534;
-    --cal-green-text:#bbf7d0;
-    --cal-amber:     #92400e;
-    --cal-amber-text:#fde68a;
-    --cal-lred:      #7f1d1d;
-    --cal-lred-text: #fecaca;
-    --cal-dred:      #991b1b;
-    --cal-dred-text: #fecaca;
+    --cal-green:            #065f46;
+    --cal-green-text:       #a7f3d0;
+    --cal-amber:            #78350f;
+    --cal-amber-text:       #fcd34d;
+    --cal-lred:             #991b1b;
+    --cal-lred-text:        #fca5a5;
+    --cal-dred:             #7f1d1d;
+    --cal-dred-text:        #fee2e2;
+    --cal-not-tracked:      #1e293b;
+    --cal-not-tracked-text: #475569;
+    --cal-future:           rgba(30, 41, 59, 0.4);
+    --cal-future-text:      #475569;
     --border-color:  #334155;
     --shadow-sm:  0 1px 3px rgba(0,0,0,0.30);
     --shadow-md:  0 4px 12px rgba(0,0,0,0.30);
@@ -714,9 +726,9 @@ a:hover { text-decoration: underline; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   border-radius: var(--radius-sm);
-  font-size: 0.75rem;
+  padding: 6px;
   cursor: pointer;
   transition: transform 0.1s, opacity 0.2s;
   position: relative;
@@ -726,24 +738,28 @@ a:hover { text-decoration: underline; }
 .cal-blank { visibility: hidden; }
 
 .cal-num {
-  font-weight: 600;
-  font-size: 0.78rem;
+  align-self: flex-start;
+  font-weight: 400;
+  font-size: 0.7rem;
   line-height: 1;
+  opacity: 0.7;
 }
 .cal-count {
-  font-size: 0.65rem;
+  font-size: 1.15rem;
   font-weight: 700;
   line-height: 1;
-  margin-top: 1px;
+  margin-top: auto;
+  margin-bottom: 2px;
 }
 
 /* Calendar colours */
-.cal-green     { background: var(--cal-green);  color: var(--cal-green-text); }
-.cal-amber     { background: var(--cal-amber);  color: var(--cal-amber-text); }
-.cal-light-red { background: var(--cal-lred);   color: var(--cal-lred-text); }
-.cal-dark-red  { background: var(--cal-dred);   color: var(--cal-dred-text); }
-.cal-future    { background: var(--bg-secondary); color: var(--text-tertiary); opacity: 0.4; }
-.cal-disabled  { cursor: default; pointer-events: none; }
+.cal-green       { background: var(--cal-green);        color: var(--cal-green-text); }
+.cal-amber       { background: var(--cal-amber);        color: var(--cal-amber-text); }
+.cal-light-red   { background: var(--cal-lred);         color: var(--cal-lred-text); }
+.cal-dark-red    { background: var(--cal-dred);         color: var(--cal-dred-text); }
+.cal-not-tracked { background: var(--cal-not-tracked);  color: var(--cal-not-tracked-text); }
+.cal-future      { background: var(--cal-future);       color: var(--cal-future-text); opacity: 0.4; }
+.cal-disabled    { cursor: default; pointer-events: none; }
 
 /* ═══════════════════════════════════════════════════════
    Entries Section (collapsible)

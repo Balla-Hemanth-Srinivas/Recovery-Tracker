@@ -4,7 +4,7 @@
  */
 'use strict';
 
-const CACHE_NAME = 'rt-cache-v1';
+const CACHE_NAME = 'rt-cache-v2';
 const ASSETS = [
   './',
   'index.html',

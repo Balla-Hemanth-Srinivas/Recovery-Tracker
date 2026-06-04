@@ -11,6 +11,10 @@ RT.Heatmap = (() => {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    const habit = RT.Storage.getHabit(habitId);
+    if (!habit) return;
+
+    const createdDateStr = RT.Utils.formatDate(new Date(habit.createdAt));
     const today    = new Date();
     const todayStr = RT.Utils.today();
 
@@ -57,10 +61,28 @@ RT.Heatmap = (() => {
     const cur = new Date(start);
     while (cur <= today) {
       const ds    = RT.Utils.formatDate(cur);
+      const future = ds > todayStr;
+      const beforeCreation = ds < createdDateStr;
       const count = counts[ds] || 0;
-      const cls   = ds > todayStr ? 'hm-empty' : RT.Calendar.colorClass(count);
+
+      let cls = '';
+      let showCountValue = false;
+
+      if (future) {
+        cls = 'hm-empty';
+      } else if (beforeCreation) {
+        cls = 'hm-not-tracked';
+      } else {
+        if (count <= habit.threshold) {
+          cls = 'cal-green';
+        } else {
+          cls = RT.Calendar.colorClass(count);
+          showCountValue = true;
+        }
+      }
+
       const tip   = `${ds}: ${count} occurrence${count !== 1 ? 's' : ''}`;
-      html += `<div class="hm-sq ${cls}" title="${tip}">${count > 0 ? count : ''}</div>`;
+      html += `<div class="hm-sq ${cls}" title="${tip}">${showCountValue ? count : ''}</div>`;
       cur.setDate(cur.getDate() + 1);
     }
     html += '</div></div></div>';
