@@ -7,6 +7,8 @@
 RT.App = (() => {
   let currentView    = null;
   let currentHabitId = null;
+  const initialHashOnLoad = window.location.hash;
+  const isRootRoute = !initialHashOnLoad || initialHashOnLoad === '#' || initialHashOnLoad === '#/';
 
   /* ─── Initialise ─── */
 
@@ -26,8 +28,12 @@ RT.App = (() => {
     if (!RT.Auth.isLoggedIn()) {
       navigate('auth');
     } else {
-      const habits = RT.Storage.getHabits();
-      navigate(habits.length === 1 ? 'habit/' + habits[0].id : 'home');
+      if (isRootRoute) {
+        const habits = RT.Storage.getHabits();
+        navigate(habits.length === 1 ? 'habit/' + habits[0].id : 'home');
+      } else {
+        route();
+      }
     }
   }
 
@@ -43,10 +49,33 @@ RT.App = (() => {
 
   /* ─── Navigation ─── */
 
-  function navigate(r) { window.location.hash = r; }
+  function navigate(r) {
+    if (!r) {
+      window.location.hash = '/';
+    } else if (r.startsWith('/')) {
+      window.location.hash = r;
+    } else {
+      window.location.hash = '/' + r;
+    }
+  }
 
   function route() {
-    const hash  = window.location.hash.slice(1) || 'auth';
+    let hash = window.location.hash;
+    // Normalize hash: strip leading '#' and leading/trailing '/'
+    if (hash.startsWith('#')) {
+      hash = hash.slice(1);
+    }
+    if (hash.startsWith('/')) {
+      hash = hash.slice(1);
+    }
+    if (hash.endsWith('/')) {
+      hash = hash.slice(0, -1);
+    }
+
+    if (!hash) {
+      hash = 'auth';
+    }
+
     const parts = hash.split('/');
     const page  = parts[0];
     const id    = parts[1];
@@ -99,7 +128,8 @@ RT.App = (() => {
         break;
 
       default:
-        navigate('home');
+        show('view-fallback');
+        renderFallbackView();
     }
   }
 
@@ -128,9 +158,9 @@ RT.App = (() => {
       view.innerHTML = `
         <div class="empty-state">
           <div class="empty-state-icon">🔍</div>
-          <h2>Habit Not Found</h2>
+          <h2>Habit not found.</h2>
           <p>This habit may have been deleted.</p>
-          <button class="btn btn-primary" onclick="RT.App.navigate('home')">Go Home</button>
+          <button class="btn btn-primary" onclick="RT.App.navigate('home')">Return Home</button>
         </div>`;
       return;
     }
@@ -183,9 +213,22 @@ RT.App = (() => {
     RT.Sync.performSync();
   }
 
+  function renderFallbackView() {
+    const view = document.getElementById('view-fallback');
+    if (view) {
+      view.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <h2>Page not found.</h2>
+          <p>The requested page does not exist.</p>
+          <button class="btn btn-primary" onclick="RT.App.navigate('home')">Return Home</button>
+        </div>`;
+    }
+  }
+
   function refreshCurrentView() { route(); }
 
-  return { init, navigate, applyTheme, onLoginSuccess, refreshCurrentView };
+  return { init, navigate, applyTheme, onLoginSuccess, refreshCurrentView, renderFallbackView };
 })();
 
 /* ─── Boot ─── */

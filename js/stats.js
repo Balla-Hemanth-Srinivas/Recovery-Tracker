@@ -163,7 +163,7 @@ RT.Stats = (() => {
           <div class="empty-state-icon">📊</div>
           <h2>No Statistics</h2>
           <p>Create a habit first to see statistics.</p>
-          <button class="btn btn-primary" onclick="RT.App.navigate('home')">Go Home</button>
+          <button class="btn btn-primary" onclick="RT.App.navigate('home')">Return Home</button>
         </div>`;
       return;
     }
